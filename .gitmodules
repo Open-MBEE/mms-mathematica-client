@@ -1,0 +1,4 @@
+[submodule "mms"]
+	path = mms
+	url = https://github.com/Open-MBEE/mms
+	branch = master

@@ -1,0 +1,93 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.6.2'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'distribution'
+    id 'com.jfrog.artifactory' version '4.6.2'
+    id 'org.hidetake.swagger.generator' version '2.9.0'
+}
+
+String buildTag = project.getProperties().get('buildTag')
+if (buildTag != null && !buildTag.isEmpty() && buildTag != version) {
+    throw new GradleException('Version mismatch.')
+}
+if (buildTag == null || buildTag.isEmpty() || project.getProperties().getOrDefault('artifactoryRepository', '').toLowerCase().contains('snapshot')) {
+    version += '-SNAPSHOT'
+}
+String buildNumber = project.getProperties().getOrDefault('buildNumber', System.currentTimeSeconds());
+
+
+swaggerSources {
+    mms {
+        inputFile = file('mms/api/swagger.yaml')
+        code {
+            language = 'mathematica-client'
+            configFile = file('config.json')
+        }
+    }
+}
+
+distributions {
+    main {
+        contents {
+            from generateSwaggerCodeMms.outputDir
+            exclude '.swagger-codegen*'
+        }
+    }
+}
+distZip.dependsOn(generateSwaggerCodeMms)
+assembleDist.dependsOn.remove(distTar)
+
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            //from components.java
+            artifact distZip
+        }
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    swaggerCodegen 'io.swagger:swagger-codegen-cli:2.2.3'
+    swaggerCodegen fileTree(dir: 'lib', include: ['**/*.jar'])
+}
+
+artifactory {
+    contextUrl = project.getProperties().get('artifactoryUrl')
+    publish {
+        repository {
+            repoKey = project.getProperties().get('artifactoryRepository')
+            username = project.getProperties().get('artifactoryUsername')
+            password = project.getProperties().get('artifactoryPassword')
+        }
+        defaults {
+            publications('mavenJava')
+        }
+        if (buildNumber != null && !buildNumber.isEmpty()) {
+            clientConfig.info.setBuildNumber(buildNumber)
+        }
+    }
+}
+artifactoryPublish.dependsOn(distZip)
+
+
+generateSwaggerCode {
+    doLast {
+        println(generateSwaggerCode.outputDir)
+    }
+}
+
+println(generateSwaggerCodeMms.outputDir)
