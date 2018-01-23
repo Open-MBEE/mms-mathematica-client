@@ -42,6 +42,14 @@ distributions {
         }
     }
 }
+
+distZip {
+    includeEmptyDirs false
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+    eachFile { file ->
+        file.setPath(path.substring(path.indexOf("/") + 1, path.length()))
+    }
+}
 distZip.dependsOn(generateSwaggerCodeMms)
 assembleDist.dependsOn.remove(distTar)
 
