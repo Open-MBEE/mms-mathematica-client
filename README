@@ -1,4 +1,0 @@
-# MMS Mathematica Client
-
-##Instructions
-Run ``./gradlew distZip``.
