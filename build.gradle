@@ -42,6 +42,14 @@ distributions {
         }
     }
 }
+
+distZip {
+    includeEmptyDirs false
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+    eachFile { file ->
+        file.setPath(path.substring(path.indexOf("/") + 1, path.length()))
+    }
+}
 distZip.dependsOn(generateSwaggerCodeMms)
 assembleDist.dependsOn.remove(distTar)
 
@@ -62,7 +70,7 @@ repositories {
 
 dependencies {
     swaggerCodegen 'io.swagger:swagger-codegen-cli:2.2.3'
-    swaggerCodegen fileTree(dir: 'lib', include: ['**/*.jar'])
+    swaggerCodegen 'org.openmbee.swagger:swagger-codegen-mathematica-client:1.0.0'
 }
 
 artifactory {

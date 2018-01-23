@@ -2,6 +2,10 @@ machine:
   java:
     version: oraclejdk8
 
+checkout:
+  post:
+  - "git submodule sync --recursive"
+  - "git submodule update --recursive --init"
 deployment:
   release:
     tag: "/[0-9.]+(-(a|b|rc)[0-9]+)?/"
