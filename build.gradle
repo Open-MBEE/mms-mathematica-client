@@ -62,7 +62,7 @@ repositories {
 
 dependencies {
     swaggerCodegen 'io.swagger:swagger-codegen-cli:2.2.3'
-    swaggerCodegen fileTree(dir: 'lib', include: ['**/*.jar'])
+    swaggerCodegen 'org.openmbee.swagger:swagger-codegen-mathematica-client:1.0.0'
 }
 
 artifactory {
