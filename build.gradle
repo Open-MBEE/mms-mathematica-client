@@ -26,7 +26,7 @@ String buildNumber = project.getProperties().getOrDefault('buildNumber', System.
 
 swaggerSources {
     mms {
-        inputFile = file('mms/api/swagger.yaml')
+        inputFile = file('mms/mms-ent/repo-amp/src/main/amp/web/mms/mms.swagger.yaml')
         code {
             language = 'mathematica-client'
             configFile = file('config.json')
